@@ -1,6 +1,6 @@
 # environment
-conda create -n nerf-rl-nav python = 3.8
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+1. conda create -n nerf-rl-nav python = 3.8
+2. pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 ## 测试环境
 python test.py

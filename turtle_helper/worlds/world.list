@@ -1,0 +1,2 @@
+maze1.world: navbot maze1
+maze2.world: ros_jackal BARN/world_192.world
