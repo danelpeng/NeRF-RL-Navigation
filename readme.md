@@ -12,6 +12,10 @@ python reset.py     ##启动gazebo和ros后 若非正常关闭，手动复位
 ## 激活工作空间
 source devel/setup.bash
 
+## 设置gazebo模型环境变量
+
+export GAZEBO_MODEL_PATH=~/ros_project/catkin_ws/src/models
+
 ## 收集数据
-cd envs/WorldModels
+cd encoder
 python generate_data.py
