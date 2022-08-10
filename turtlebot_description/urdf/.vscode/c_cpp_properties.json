@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/opt/ros/noetic/include/**",
+        "/home/lkq/ros_project/acc/0621/gazebo_ws/src/acc_manage/include/**",
+        "/home/lkq/ros_project/acc/0621/gazebo_ws/src/agv_gazebo/include/**",
+        "/home/lkq/ros_project/acc/0621/gazebo_ws/src/agv_tcpserver/include/**",
+        "/home/lkq/ros_project/acc/acc_ws/src/diff_gazebo/include/**",
+        "/home/lkq/ros_project/acc/acc_ws/src/move_control/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,54 @@
+<launch>
+
+    <!-- 设置launch文件的参数 -->
+    <!--arg name="world_name" value="/home/lkq/gazebo_project/world/yuyan.world"/-->
+    <!-- <arg name="world_name" value="$(find gazebo_ros)/launch/empty_world.launch"/> -->
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+
+    <arg name="max_angle" default="1.5707"/>
+    <arg name="min_angle" default="-1.5707"/>
+    <arg name="speed_angle" default="100"/>
+    <arg name="robot_namespace" default="/diff_robot"/>
+    <arg name="lidar_high" default="0.66053"/>
+
+    <arg name="robot_name_0" default="sim_diff_car_0"/>
+
+    <!-- 运行gazebo仿真环境 -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find diff_gazebo)/world/empty.world" />
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="headless" value="$(arg headless)"/>
+    </include>
+
+    <group ns="kabuki">
+      <param name="robot_description" command="$(find xacro)/xacro -i '$(find kobuki_gazebo)/urdf/xacro/gazebo/kobuki_with_sensors.urdf.xacro'
+          MAX_ANGLE:=$(arg max_angle)
+          MIN_ANGLE:=$(arg min_angle)
+          SPEED_ANGLE:=$(arg speed_angle)
+          lidar_high:=$(arg lidar_high)
+          robot_namespace:=kabuki 
+          prefix:=kabuki"
+      />
+      <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+      <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+      <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+            args="-urdf 
+            -model kabuki 
+            -param robot_description
+            -x 0
+            -y 0
+            -z 0.272991
+            -R 0
+            -Y 0"/> 
+      <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="sim_car0"/> -->
+    </group>
+    
+</launch>
+

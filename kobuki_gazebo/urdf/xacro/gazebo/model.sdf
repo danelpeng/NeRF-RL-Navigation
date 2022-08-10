@@ -1,0 +1,504 @@
+<sdf version='1.7'>
+  <model name='arm'>
+    <link name='body_footprint'>
+      <inertial>
+        <pose>0 0 0.07 0 -0 0</pose>
+        <mass>10</mass>
+        <inertia>
+          <ixx>0.608333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.13542</iyy>
+          <iyz>0</iyz>
+          <izz>0.677083</izz>
+        </inertia>
+      </inertial>
+      <collision name='body_footprint_fixed_joint_lump__base_collision_collision'>
+        <pose>0 0 0.07 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/car_dae/car.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='body_footprint_fixed_joint_lump__camera_link_collision_1'>
+        <pose>-0.3 0 0.27 0 -0 3.14159</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='body_footprint_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='body_footprint_fixed_joint_lump__base_visual_visual_1'>
+        <pose>0 0 0.07 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/car_dae/car.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='body_footprint_fixed_joint_lump__camera_link_visual_2'>
+        <pose>-0.3115 0 0.28 1.5708 -0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://realsense2_description/meshes/d415.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <gravity>1</gravity>
+      <self_collide>0</self_collide>
+      <sensor name='contacts' type='contact'>
+        <contact>
+          <collision>body_footprint_fixed_joint_lump__base_collision_collision_1</collision>
+          <topic>__default_topic__</topic>
+        </contact>
+        <plugin name='gazebo_ros_bumper_controller' filename='libgazebo_ros_bumper.so'>
+          <always_on>1</always_on>
+          <robotNamespace>/</robotNamespace>
+          <bumperTopicName>car/bumper_states</bumperTopicName>
+          <frameName>bumper</frameName>
+          <visualize>1</visualize>
+          <update_rate>50.0</update_rate>
+        </plugin>
+        <pose>0 0 0.07 0 -0 0</pose>
+      </sensor>
+      <gravity>1</gravity>
+      <sensor name='camera' type='depth'>
+        <always_on>1</always_on>
+        <update_rate>50</update_rate>
+        <camera>
+          <horizontal_fov>1.5708</horizontal_fov>
+          <image>
+            <format>RGB8</format>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>10000</far>
+          </clip>
+        </camera>
+        <plugin name='kinect_camera_controller' filename='libgazebo_ros_openni_kinect.so'>
+          <cameraName>camera</cameraName>
+          <alwaysOn>1</alwaysOn>
+          <updateRate>50</updateRate>
+          <imageTopicName>rgb/image_raw</imageTopicName>
+          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <frameName>camera_image</frameName>
+          <baseline>0.1</baseline>
+          <distortion_k1>0.0</distortion_k1>
+          <distortion_k2>0.0</distortion_k2>
+          <distortion_k3>0.0</distortion_k3>
+          <distortion_t1>0.0</distortion_t1>
+          <distortion_t2>0.0</distortion_t2>
+          <pointCloudCutoff>0.4</pointCloudCutoff>
+        </plugin>
+        <pose>-0.3 0 0.27 0 -0 3.14159</pose>
+      </sensor>
+    </link>
+    <joint name='wheel_front_wheel_fun_1' type='revolute'>
+      <pose relative_to='body_footprint'>-0.3 0 -0.0925 0 -0 0</pose>
+      <parent>body_footprint</parent>
+      <child>wheel_front_wheel_box_1_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_front_wheel_box_1_link'>
+      <pose relative_to='wheel_front_wheel_fun_1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.000166667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000166667</iyy>
+          <iyz>0</iyz>
+          <izz>0.000166667</izz>
+        </inertia>
+      </inertial>
+      <visual name='wheel_front_wheel_box_1_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_front_wheel_fun_2' type='revolute'>
+      <pose relative_to='wheel_front_wheel_box_1_link'>0 0 0 0 -0 0</pose>
+      <parent>wheel_front_wheel_box_1_link</parent>
+      <child>wheel_front_wheel_box_2_link</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_front_wheel_box_2_link'>
+      <pose relative_to='wheel_front_wheel_fun_2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.000166667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000166667</iyy>
+          <iyz>0</iyz>
+          <izz>0.000166667</izz>
+        </inertia>
+      </inertial>
+      <visual name='wheel_front_wheel_box_2_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_front_wheel_fun_3' type='revolute'>
+      <pose relative_to='wheel_front_wheel_box_2_link'>0 0 0 0 -0 0</pose>
+      <parent>wheel_front_wheel_box_2_link</parent>
+      <child>wheel_front_wheel_box_3_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_front_wheel_box_3_link'>
+      <pose relative_to='wheel_front_wheel_fun_3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.00625</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00625</iyy>
+          <iyz>0</iyz>
+          <izz>0.00625</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_front_wheel_box_3_link_fixed_joint_lump__collision_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/fun_wheel/fun_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='wheel_front_wheel_box_3_link_fixed_joint_lump__visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/fun_wheel/fun_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_left_wheel_odom' type='revolute'>
+      <pose relative_to='body_footprint'>0 -0.38 -0.03 0 -0 0</pose>
+      <parent>body_footprint</parent>
+      <child>wheel_left_wheel_link</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_left_wheel_link'>
+      <pose relative_to='wheel_left_wheel_odom'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>3</mass>
+        <inertia>
+          <ixx>0.0126187</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0126187</iyy>
+          <iyz>0</iyz>
+          <izz>0.0234375</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_left_wheel_link_fixed_joint_lump__collision_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/power_wheel/power_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='wheel_left_wheel_link_fixed_joint_lump__visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/power_wheel/power_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_rear_wheel_fun_1' type='revolute'>
+      <pose relative_to='body_footprint'>0.3 0 -0.0925 0 -0 0</pose>
+      <parent>body_footprint</parent>
+      <child>wheel_rear_wheel_box_1_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_rear_wheel_box_1_link'>
+      <pose relative_to='wheel_rear_wheel_fun_1'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.000166667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000166667</iyy>
+          <iyz>0</iyz>
+          <izz>0.000166667</izz>
+        </inertia>
+      </inertial>
+      <visual name='wheel_rear_wheel_box_1_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.02 0.02</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_rear_wheel_fun_2' type='revolute'>
+      <pose relative_to='wheel_rear_wheel_box_1_link'>0 0 0 0 -0 0</pose>
+      <parent>wheel_rear_wheel_box_1_link</parent>
+      <child>wheel_rear_wheel_box_2_link</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_rear_wheel_box_2_link'>
+      <pose relative_to='wheel_rear_wheel_fun_2'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.000166667</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000166667</iyy>
+          <iyz>0</iyz>
+          <izz>0.000166667</izz>
+        </inertia>
+      </inertial>
+      <visual name='wheel_rear_wheel_box_2_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_rear_wheel_fun_3' type='revolute'>
+      <pose relative_to='wheel_rear_wheel_box_2_link'>0 0 0 0 -0 0</pose>
+      <parent>wheel_rear_wheel_box_2_link</parent>
+      <child>wheel_rear_wheel_box_3_link</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_rear_wheel_box_3_link'>
+      <pose relative_to='wheel_rear_wheel_fun_3'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.00625</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00625</iyy>
+          <iyz>0</iyz>
+          <izz>0.00625</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_rear_wheel_box_3_link_fixed_joint_lump__collision_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/fun_wheel/fun_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='wheel_rear_wheel_box_3_link_fixed_joint_lump__visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/fun_wheel/fun_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='wheel_right_wheel_odom' type='revolute'>
+      <pose relative_to='body_footprint'>0 0.38 -0.03 0 -0 0</pose>
+      <parent>body_footprint</parent>
+      <child>wheel_right_wheel_link</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='wheel_right_wheel_link'>
+      <pose relative_to='wheel_right_wheel_odom'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>3</mass>
+        <inertia>
+          <ixx>0.0126187</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0126187</iyy>
+          <iyz>0</iyz>
+          <izz>0.0234375</izz>
+        </inertia>
+      </inertial>
+      <collision name='wheel_right_wheel_link_fixed_joint_lump__collision_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/power_wheel/power_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='wheel_right_wheel_link_fixed_joint_lump__visual_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>/home/lkq/ros_project/acc/0621/gazebo_ws/src/diff_gazebo/meshes/agv_robot/meshes/wheel/power_wheel/power_wheel.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <plugin name='differential_drive_controller' filename='libgazebo_ros_diff_drive.so'>
+      <alwaysOn>1</alwaysOn>
+      <publishWheelTF>1</publishWheelTF>
+      <rosDebugLevel>Debug</rosDebugLevel>
+      <robotNamespace>/</robotNamespace>
+      <publishTf>1</publishTf>
+      <publishWheelJointState>1</publishWheelJointState>
+      <alwaysOn>1</alwaysOn>
+      <updateRate>100.0</updateRate>
+      <legacyMode>1</legacyMode>
+      <leftJoint>wheel_left_wheel_odom</leftJoint>
+      <rightJoint>wheel_right_wheel_odom</rightJoint>
+      <wheelSeparation>0.76</wheelSeparation>
+      <wheelDiameter>0.25</wheelDiameter>
+      <broadcastTF>0.1</broadcastTF>
+      <wheelTorque>1</wheelTorque>
+      <wheelAcceleration>1</wheelAcceleration>
+      <commandTopic>car/cmd_vel</commandTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometryTopic>car/odom</odometryTopic>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <publishOdomTF>1</publishOdomTF>
+      <odometrySource>world</odometrySource>
+    </plugin>
+    <static>0</static>
+    <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
+      <robotNamespace>/</robotNamespace>
+      <controlPeriod>0.01</controlPeriod>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </model>
+</sdf>

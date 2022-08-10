@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<robot name="arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+    <xacro:arg name="robot_namespace" default="/" />
+    <xacro:arg name="MAX_ANGLE"       default="1" />
+    <xacro:arg name="MIN_ANGLE"       default="-1" />
+    <xacro:arg name="SPEED_ANGLE"     default="1" />
+    <xacro:arg name="lidar_high"      default = "0.66053"/>
+    <xacro:arg name="prefix"          default = "car"/>
+
+
+    <xacro:include filename="$(find kobuki_gazebo)/urdf/xacro/gazebo/kobuki_base_description.urdf.xacro" />
+    <xacro:kobuki/>
+
+    <xacro:include filename="$(find kobuki_gazebo)/urdf/xacro/gazebo/hexagons.urdf.xacro"/>
+    <xacro:stack_hexagons parent="base_link"/>
+
+    <xacro:include filename="$(find kobuki_gazebo)/urdf/xacro/sensors/kinect.urdf.xacro"/>
+    <xacro:sensor_kinect  parent="base_link"/>
+
+
+    <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>$(arg robot_namespace)</robotNamespace>
+        <controlPeriod>0.01</controlPeriod>
+        <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      </plugin>
+    </gazebo>
+
+</robot>
+
+
