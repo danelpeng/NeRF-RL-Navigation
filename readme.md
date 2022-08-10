@@ -9,6 +9,7 @@ python test.py
 python reset.py     ##启动gazebo和ros后 若非正常关闭，手动复位
 
 # 训练VAE
+
 ## 激活工作空间
 source devel/setup.bash
 
@@ -17,5 +18,5 @@ source devel/setup.bash
 export GAZEBO_MODEL_PATH=~/ros_project/catkin_ws/src/models
 
 ## 收集数据
-cd encoder
-python generate_data.py
+1. cd encoder
+2. python generate_data.py

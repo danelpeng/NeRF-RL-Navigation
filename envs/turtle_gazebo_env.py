@@ -24,10 +24,10 @@ class TurtleGazebo(gym.Env):
         self,
         gui=True,
         init_sim=True,
-        init_position=[ -0.5, -2.5, np.pi/2],
+        init_position=[ 0.0, 0.0, np.pi/2],
         goal_position=[-3.8, -3.8, 0],
-        max_step=100,
-        time_step=1,    #1s == 1 time step
+        max_step=10,
+        time_step=1.0,    #1s == 1 time step
         success_reward=100,
         collision_reward=-50,
         move_reward=1,
@@ -53,7 +53,7 @@ class TurtleGazebo(gym.Env):
         self.move_reward = move_reward,
 
         #action
-        min_v, max_v= 0.0, 1.0
+        min_v, max_v= 0.5, 0.5
         min_w, max_w=-1.0, 1.0
         self._cmd_vel_pub = rospy.Publisher('/kabuki/cmd_vel', Twist, queue_size=1)
         self.range_dict = RANGE_DCIT = {
@@ -69,8 +69,8 @@ class TurtleGazebo(gym.Env):
         #observation
         self.observation_space = Box(
             low=0,
-            high=1,
-            shape=(48, 64, 3),
+            high=255,
+            shape=(480, 640, 3),
             dtype=np.float64,
         )
 
@@ -94,6 +94,7 @@ class TurtleGazebo(gym.Env):
         np.random.seed(seed)
     
     def reset(self):
+        self.step_count = 0 #for tackle step timeout
         self.gazebo_sim.reset() #set robot by init_postion
         self.start_time = self.current_time = rospy.get_time()
         pos, psi = self._get_pos_psi()
@@ -133,6 +134,13 @@ class TurtleGazebo(gym.Env):
             if collided:
                 print("robot has collided")
                 rew += self.collision_reward
+            if timeout:
+                print("robot has timeout")
+                rew += self.collision_reward
+            if flip:
+                print("robot has fliped")
+                rew += self.collision_reward
+                
         
         if not done:
             #if move close to goal, get a positive rew
@@ -173,7 +181,7 @@ class TurtleGazebo(gym.Env):
         img_rgb = cv2.resize(img_rgb, (width,height))
         img_rgb = np.array(img_rgb)
 
-        img_rgb = img_rgb / 255.0
+        #img_rgb = img_rgb / 255.0
         return img_rgb
     
     def _get_pos_psi(self):
@@ -188,6 +196,9 @@ class TurtleGazebo(gym.Env):
         assert -np.pi <= psi <= np.pi, psi
 
         return pos,psi
+
+    def reset_init_model_state(self, init_position = [0,0,0]):
+        self.gazebo_sim.reset_init_model_state(init_position)
 
     def close(self):
         #These will make sure all the ros processed being killed
