@@ -9,3 +9,6 @@ torchvision>=0.11.2
 torchaudio>=0.10.1
 transformers==4.11
 opencv-contrib-python
+torchsummary
+torchvision
+pytorch_lightning
