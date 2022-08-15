@@ -28,7 +28,7 @@ def main(args):
     [0.0, 2.0, -np.pi/2], [-2.0,3.0, 0.0]]  #for office_small
     #init_position = [[0.0, -3.0, np.pi/2], [-2.0, -3.0, np.pi/2]]  #for maze1
 
-    save_dir = os.path.join(encoder_dir, "dataset")
+    save_dir = os.path.join(encoder_dir, "datasets")
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -53,10 +53,12 @@ def main(args):
 
             obs, rew, done, info = env.step(actions)
             image_name = 'episode_' + str(episode) + '_time_step_' + str(time_step) + '.jpg'
-            print("Saving {} to dataset ...".format(image_name))
-            cv2.imwrite(save_dir + "/" + image_name, obs)
-            
-        total_time_steps += time_step
+            if (episode >= 10):
+                print("Saving {} to dataset ...".format(image_name))
+                cv2.imwrite(save_dir + "/" + image_name, obs)
+
+        if (episode >= 10):    
+            total_time_steps += time_step
         if (total_time_steps >= max_size):
             break
         episode += 1
@@ -69,8 +71,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate new training data')
-    parser.add_argument('--total_episodes', type=int, default=10000, help='total record episodes')
-    parser.add_argument('--max_size', type=int, default=10000, help='save image nums')
+    parser.add_argument('--total_episodes', type=int, default=100000, help='give a big nums')
+    parser.add_argument('--max_size', type=int, default=10000, help='real image nums you want to save')
 
     args = parser.parse_args()
     main(args)
