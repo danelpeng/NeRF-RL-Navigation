@@ -12,7 +12,7 @@ from dataset import VAEDataset
 from pytorch_lightning.plugins import DDPPlugin
 
 parser = argparse.ArgumentParser(description='Generic runner for VAE models')
-parser.add_argument('--config', '-c', dest="filename", metavar='FILE', help='path to the config file', default="encoder/configs/vae.yaml")
+parser.add_argument('--config', '-c', dest="filename", metavar='FILE', help='path to the config file', default="configs/vae.yaml")
 args = parser.parse_args()
 with open(args.filename, 'r') as file:
     try:

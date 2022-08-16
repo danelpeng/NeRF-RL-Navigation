@@ -4,7 +4,7 @@ model_params:
   latent_dim: 128
 
 data_params:
-  data_path: "encoder/Data/"
+  data_path: "Data/"
   train_batch_size: 8
   val_batch_size: 8
   patch_size: [128,96]
@@ -22,5 +22,5 @@ trainer_params:
   max_epochs: 100
 
 logging_params:
-  save_dir: "encoder/logs/"
+  save_dir: "logs/"
   name: "VAE"
