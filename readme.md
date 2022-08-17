@@ -4,7 +4,7 @@
 2. pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 ## 仿真环境
-![](https://github.com/zedwind/NeRF-RL-Navigation/blob/master/script/images/recons_VAE_Epoch_46.png)
+![](https://github.com/zedwind/NeRF-RL-Navigation/blob/master/script/images/office_small.jpg)
 ## 测试环境
 python test.py
 
@@ -24,7 +24,7 @@ export GAZEBO_MODEL_PATH=~/ros_project/catkin_ws/src/models
 1. cd encoder
 2. python generate_data.py
 
-![](https://github.com/zedwind/NeRF-RL-Navigation/blob/master/script/images/recons_VAE_Epoch_46.png)
+![](https://github.com/zedwind/NeRF-RL-Navigation/blob/master/script/images/episode_0_time_step_2.jpg)
 
 ## 训练
 1. python run.py
