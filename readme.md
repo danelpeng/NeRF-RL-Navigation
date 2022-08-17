@@ -20,3 +20,22 @@ export GAZEBO_MODEL_PATH=~/ros_project/catkin_ws/src/models
 ## 收集数据
 1. cd encoder
 2. python generate_data.py
+
+## 训练
+1. python run.py
+
+## 重建效果
+
+![](E:\new\强化学习\笔记\ros_project\图片\recons_VAE_Epoch_46.png)
+
+
+## 加载保存的模型
+
+	vae_model = VAE(in_channels=3, latent_dim=128)	#初始化VAE
+	model_dict = torch.load("/checkpoint/**.ckpt", map_location=torch.device("cpu"))	#加载模型
+	new_state_dict = OrderedDict()	#消除模型key值不匹配
+	for k,v in state_dict.items():
+		name = k[6:]
+		new_state_dict[name] = v
+		
+	vae_model.load_state_dict(new_state_dict)	#加载预训练模型，用于策略网络的前端
