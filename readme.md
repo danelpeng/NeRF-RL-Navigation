@@ -29,7 +29,7 @@ export GAZEBO_MODEL_PATH=~/ros_project/catkin_ws/src/models
 
 ## 重建效果
 
-![](E:\new\强化学习\笔记\ros_project\图片\recons_VAE_Epoch_46.png)
+![](https://github.com/zedwind/NeRF-RL-Navigation/blob/master/script/images/recons_VAE_Epoch_46.png)
 
 
 ## 加载保存的模型
