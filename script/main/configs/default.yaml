@@ -1,0 +1,16 @@
+env_config:
+  env_id: "RL-Nav"
+  seed: 666
+
+training_config:
+  encoder: "mlp"
+  actor_lr: 0.00001
+  critic_lr: 0.00002
+
+  max_step: 16  #1000000
+  collect_per_step: 8 #4096
+  update_per_step: 4  #1024
+  batch_size: 4 #128
+
+  log_intervals: 2
+  

@@ -24,8 +24,8 @@ class TurtleGazebo(gym.Env):
         self,
         gui=True,
         init_sim=True,
-        init_position=[ 0.0, 0.0, np.pi/2],
-        goal_position=[-3.8, -3.8, 0],
+        init_position=[0.0, -3.0, np.pi/2] ,    #[ 0.0, -3.0, np.pi/2]  
+        goal_position=[2.5, 3.0, np.pi/2],
         max_step=10,
         time_step=1.0,    #1s == 1 time step
         success_reward=100,
@@ -53,7 +53,7 @@ class TurtleGazebo(gym.Env):
         self.move_reward = move_reward,
 
         #action
-        min_v, max_v= 0.5, 0.5
+        min_v, max_v= 0.0, 1.0
         min_w, max_w=-1.0, 1.0
         self._cmd_vel_pub = rospy.Publisher('/kabuki/cmd_vel', Twist, queue_size=1)
         self.range_dict = RANGE_DCIT = {
@@ -69,8 +69,8 @@ class TurtleGazebo(gym.Env):
         #observation
         self.observation_space = Box(
             low=0,
-            high=255,
-            shape=(480, 640, 3),
+            high=1,   #for collect image: 255; for train: 1
+            shape=(96, 128, 3),
             dtype=np.float64,
         )
 
@@ -120,6 +120,7 @@ class TurtleGazebo(gym.Env):
         #compute termination
         flip = pos.z > 0.1
         goal_pos = np.array([self.goal_position[0] - pos.x, self.goal_position[1] - pos.y])##(goal.x-cur.x, goal.y-cur.y)
+        print("goal_pos is", goal_pos)
         success = np.linalg.norm(goal_pos) < 0.5
         timeout = self.step_count >= self.max_step
         collided = self.gazebo_sim.get_collision()
@@ -132,13 +133,13 @@ class TurtleGazebo(gym.Env):
             if success:
                 rew += self.success_reward
             if collided:
-                print("robot has collided")
+                #print("robot has collided")
                 rew += self.collision_reward
             if timeout:
-                print("robot has timeout")
+                #print("robot has timeout")
                 rew += self.collision_reward
             if flip:
-                print("robot has fliped")
+                #print("robot has fliped")
                 rew += self.collision_reward
                 
         
@@ -181,7 +182,7 @@ class TurtleGazebo(gym.Env):
         img_rgb = cv2.resize(img_rgb, (width,height))
         img_rgb = np.array(img_rgb)
 
-        #img_rgb = img_rgb / 255.0
+        img_rgb = img_rgb / 255.0   #for train
         return img_rgb
     
     def _get_pos_psi(self):

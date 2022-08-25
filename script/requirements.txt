@@ -12,3 +12,4 @@ opencv-contrib-python
 torchsummary
 torchvision
 pytorch_lightning
+tensorboardX
