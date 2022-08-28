@@ -27,8 +27,6 @@ from models.net import MLP
 
 vae_pretrain_model_path = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/logs/VAE/version_10/chechpoints/last.ckpt'
 vae_model = encoder.vae.VAE(in_channels=3, latent_dim=128)
-input_image = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/Data/office_128x96/episode_10_time_step_1.jpg'
-img = default_loader(input_image)
 
 
 def initialize_config(config_path, save_path):
