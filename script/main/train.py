@@ -160,7 +160,6 @@ def train(env, policy, replay_buffer, config):
     n_iter = 0
     n_ep = 0
     epinfo_buf = collections.deque(maxlen=8)    #300
-    world_ep_buf = collections.defaultdict(lambda: collections.deque(maxlen=1))
     t0 = time.time()
 
     while n_steps < config["training_config"]["max_step"]:
@@ -171,8 +170,6 @@ def train(env, policy, replay_buffer, config):
         n_iter += 1
         n_ep += len(epinfo)
         epinfo_buf.extend(epinfo)
-        for d in epinfo:
-            world_ep_buf[0].append(d)
 
         loss_infos = []
         for _ in range(config["training_config"]["update_per_step"]):
@@ -202,13 +199,6 @@ def train(env, policy, replay_buffer, config):
                 writer.add_scalar('train/' + k, log[k], global_step=n_steps)
             policy.save(save_path, "last_policy")
             print("Logging to %s" %save_path)
-
-            for k in world_ep_buf.keys():
-                writer.add_scalar(k + "/Episode_return", np.mean([epinfo["ep_rew"] for epinfo in world_ep_buf[k]]), global_step=n_steps)
-                writer.add_scalar(k + "/Episode_length", np.mean([epinfo["ep_len"] for epinfo in world_ep_buf[k]]), global_step=n_steps)
-                writer.add_scalar(k + "/Success", np.mean([epinfo["success"] for epinfo in world_ep_buf[k]]), global_step=n_steps)
-                writer.add_scalar(k + "/Time", np.mean([epinfo["ep_time"] for epinfo in world_ep_buf[k]]), global_step=n_steps)
-                
 
 
 if __name__ == "__main__":
