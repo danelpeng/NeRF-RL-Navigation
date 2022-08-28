@@ -26,7 +26,7 @@ class TurtleGazebo(gym.Env):
         init_sim=True,
         init_position=[0.0, -3.0, np.pi/2] ,    #[ 0.0, -3.0, np.pi/2]  
         goal_position=[2.5, 3.0, np.pi/2],
-        max_step=10,
+        max_step=50,
         time_step=1.0,    #1s == 1 time step
         success_reward=100,
         collision_reward=-50,
