@@ -112,7 +112,7 @@ class Critic(nn.Module):
 class TD3(object):
     def __init__(
         self,actor,actor_optim,critic,critic_optim,action_range,
-        gamma=0.99,tau=0.005,policy_noise=0.2,noise_clip=0.5,n_step=1,update_actor_freq=2,exploration_noise=0.1,
+        gamma=0.99,tau=0.05,policy_noise=0.2,noise_clip=0.5,n_step=1,update_actor_freq=2,exploration_noise=0.1,
         device="cpu",
     ):
         self.actor = actor
@@ -201,7 +201,7 @@ class TD3(object):
         if self.total_it % self.update_actor_freq ==0 :
 
             #Compute actor loss
-            actor_loss = -self.critic.Q1(obs, self.actor(obs, last_act, relative_pos)).mean()
+            actor_loss = -self.critic.Q1(obs, last_act, relative_pos, self.actor(obs, last_act, relative_pos)).mean()
 
             #Optimize the actor
             self.actor_optimizer.zero_grad()
