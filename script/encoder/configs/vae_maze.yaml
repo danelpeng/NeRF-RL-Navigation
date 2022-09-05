@@ -1,0 +1,26 @@
+model_params:
+  name: 'VAE'
+  in_channels: 3
+  latent_dim: 32
+
+data_params:
+  data_path: "encoder/Data/"
+  train_batch_size: 8
+  val_batch_size: 8
+  patch_size: [64,48]
+  num_workers: 4
+
+exp_params:
+  LR: 0.001
+  weight_decay: 0.0
+  scheduler_gamma: 0.95
+  kld_weight: 0.0 #0.00025
+  manual_seed: 666
+
+trainer_params:
+  gpus: [0]
+  max_epochs: 100
+
+logging_params:
+  save_dir: "encoder/logs/maze1"
+  name: "VAE"

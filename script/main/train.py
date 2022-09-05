@@ -18,15 +18,23 @@ from tensorboardX import SummaryWriter
 import shutil
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-import encoder.vae
+#import encoder.vae
+import encoder.vae_maze
 import envs.registration
 from rl_algo.td3 import Actor, Critic, TD3, ReplayBuffer
 from rl_algo.collector import LocalCollector
 from models.net import MLP
 
+#for office
+# vae_pretrain_model_path = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/logs/VAE/version_10/chechpoints/last.ckpt'
+# vae_model = encoder.vae.VAE(in_channels=3, latent_dim=128)
 
-vae_pretrain_model_path = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/logs/VAE/version_10/chechpoints/last.ckpt'
-vae_model = encoder.vae.VAE(in_channels=3, latent_dim=128)
+#for maze1
+vae_pretrain_model_path = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/logs/maze1/VAE/version_1/chechpoints/epoch=94-step=8930.ckpt'
+vae_model = encoder.vae_maze.VAE(in_channels=3, latent_dim=32)
+
+# input_image = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/Data/office_128x96/episode_10_time_step_1.jpg'
+# img = default_loader(input_image)
 
 
 def initialize_config(config_path, save_path):
@@ -59,7 +67,7 @@ def initialize_logging(config):
 
 
 def initialize_policy(config, env, vae_pretrain_model_path, vae_model):
-    state_dim = env.observation_space.shape #(96, 128, 3)
+    state_dim = env.observation_space.shape #for office: (96, 128, 3)   for maze1: (48, 64, 3)
     action_dim = np.prod(env.action_space.shape)
     action_space_low = env.action_space.low
     action_space_high = env.action_space.high
@@ -72,10 +80,11 @@ def initialize_policy(config, env, vae_pretrain_model_path, vae_model):
 
     vae = load_pretrain_model(vae_pretrain_model_path, vae_model)
     # initialize actor
-    input_dim = 128
+    input_dim = 32 + 2 + 2 #latent_dim + previous_act + relative_pos
+    
     actor = Actor(
         encoder=vae, 
-        head=MLP(input_dim=input_dim, num_layers=2, hidden_layer_size=128),
+        head=MLP(input_dim=input_dim, num_layers=2, hidden_layer_size=512),
         action_dim=action_dim,
         ).to(device)
 
@@ -90,7 +99,7 @@ def initialize_policy(config, env, vae_pretrain_model_path, vae_model):
     input_dim += np.prod(action_dim)
     critic = Critic(
         encoder=vae,
-        head=MLP(input_dim=input_dim, num_layers=2, hidden_layer_size=128),
+        head=MLP(input_dim=input_dim, num_layers=2, hidden_layer_size=512),
     ).to(device)
     critic_optim = torch.optim.Adam(
         filter(lambda p: p.requires_grad,critic.parameters()),
@@ -101,15 +110,14 @@ def initialize_policy(config, env, vae_pretrain_model_path, vae_model):
 
     # initialize agents
     policy = TD3(
-        actor,actor_optim,
-        critic, critic_optim,
+        actor,actor_optim,critic, critic_optim,
         action_range=[action_space_low, action_space_high],
         device=device
     )
 
     # initialize buffer
     replay_buffer = ReplayBuffer(
-        state_dim, action_dim, max_size=8,
+        state_dim, action_dim, max_size=config["training_config"]["buffer_size"],
         device=device
     )
 
@@ -150,14 +158,14 @@ def train(env, policy, replay_buffer, config):
     print(">>>> initialized logging")
 
     collector = LocalCollector(policy, env, replay_buffer)
-    # print(">>>> Pre-collect experience")
-    # collector.collect(n_steps=8)
+    print(">>>> Pre-collect experience")
+    collector.collect(n_steps=config["training_config"]["collect_per_step"])
     print(">>>>Start training")
 
     n_steps = 0
     n_iter = 0
     n_ep = 0
-    epinfo_buf = collections.deque(maxlen=8)    #300
+    epinfo_buf = collections.deque(maxlen=100)    #
     t0 = time.time()
 
     while n_steps < config["training_config"]["max_step"]:
