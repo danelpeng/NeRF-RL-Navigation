@@ -16,10 +16,19 @@ class Actor(nn.Module):
         self.fc = nn.Linear(self.head.feature_dim, action_dim)
 
     def forward(self, obs, last_act, relative_pos):
-        latent_vec = self.encoder(obs)  
-        last_act = torch.tensor(last_act).reshape((-1,2)).to(latent_vec.device)
-        relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(latent_vec.device) 
-        state = torch.cat((latent_vec, relative_pos, last_act), dim=1).to(torch.float32)# latent_vec_dim + 2 + 2
+        last_act = torch.tensor(last_act).reshape((-1,2)).to(torch.float32)
+        relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(torch.float32)
+        # last_act = torch.tensor(last_act).reshape((-1,2)).to(torch.float64)
+        # relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(torch.float64)
+
+        [mu, log_var] = self.encoder.encode(obs) 
+        latent_vec = self.encoder.reparameterize(mu, log_var)    
+        """
+        add (v, w) and goal_pos to state
+        """
+        state = np.concatenate([latent_vec.cpu(), relative_pos.cpu(), last_act.cpu()], axis=1)
+        state = torch.tensor(state).to(torch.float32).to(latent_vec.device) #34
+        # state = torch.tensor(state).to(torch.float64).to(latent_vec.device) #34
         
         state = self.head(state)    
         return torch.tanh(self.fc(state))   #[-1,1]
@@ -39,15 +48,21 @@ class Critic(nn.Module):
         self.fc2 = nn.Linear(self.head2.feature_dim, 1)
     
     def forward(self, obs, last_act, relative_pos, action):
+        last_act = torch.tensor(last_act).reshape((-1,2)).to(torch.float32)
+        relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(torch.float32)
+        # last_act = torch.tensor(last_act).reshape((-1,2)).to(torch.float64)
+        # relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(torch.float64)
+
         #critic1
         if self.encoder1:
-            latent_vec_1 = self.encoder1(obs)
+            [mu1, log_var1] = self.encoder1.encode(obs)
+            latent_vec_1 = self.encoder1.reparameterize(mu1, log_var1)
         else:
             latent_vec_1 = obs
 
-        last_act = torch.tensor(last_act).reshape((-1,2)).to(latent_vec_1.device)
-        relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(latent_vec_1.device)
-        state1_concat = torch.cat((latent_vec_1, relative_pos, last_act), dim=1).to(torch.float32)
+        state1_concat = np.concatenate([latent_vec_1.cpu(), relative_pos.cpu(), last_act.cpu()], axis=1)
+        state1_concat = torch.tensor(state1_concat).to(torch.float32).to(latent_vec_1.device) #34
+        # state1_concat = torch.tensor(state1_concat).to(torch.float64).to(latent_vec_1.device) #34
 
         sa1 = torch.cat([state1_concat, action], 1)
 
@@ -56,11 +71,14 @@ class Critic(nn.Module):
 
         #critic2
         if self.encoder2:
-            latent_vec_2 = self.encoder2(obs)
+            [mu2, log_var2] = self.encoder2.encode(obs)
+            latent_vec_2 = self.encoder2.reparameterize(mu2, log_var2)
         else:
             latent_vec_2 = obs
         
-        state2_concat = torch.cat((latent_vec_2, relative_pos, last_act), dim=1).to(torch.float32)
+        state2_concat = np.concatenate([latent_vec_2.cpu(), relative_pos.cpu(), last_act.cpu()], axis=1)
+        state2_concat = torch.tensor(state2_concat).to(torch.float32).to(latent_vec_2.device) #34
+        # state2_concat = torch.tensor(state2_concat).to(torch.float64).to(latent_vec_2.device) #34
 
         sa2 = torch.cat([state2_concat, action], 1)
 
@@ -70,14 +88,19 @@ class Critic(nn.Module):
         return q1, q2
     
     def Q1(self, obs, last_act, relative_pos, action):
+        last_act = torch.tensor(last_act).reshape((-1,2)).to(torch.float32)
+        relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(torch.float32)
+        # last_act = torch.tensor(last_act).reshape((-1,2)).to(torch.float64)
+        # relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(torch.float64)
         if self.encoder1:
-            latent_vec_1 = self.encoder1(obs)
+            [mu1, log_var1] = self.encoder1.encode(obs)
+            latent_vec_1 = self.encoder1.reparameterize(mu1, log_var1)
         else:
             latent_vec_1 = obs
-        last_act = torch.tensor(last_act).reshape((-1,2)).to(latent_vec_1.device)
-        relative_pos = torch.tensor(relative_pos).reshape((-1,2)).to(latent_vec_1.device)
 
-        state1_concat = torch.cat((latent_vec_1, relative_pos, last_act), dim=1).to(torch.float32)
+        state1_concat = np.concatenate([latent_vec_1.cpu(), relative_pos.cpu(), last_act.cpu()], axis=1)
+        state1_concat = torch.tensor(state1_concat).to(torch.float32).to(latent_vec_1.device) #34
+        # state1_concat = torch.tensor(state1_concat).to(torch.float64).to(latent_vec_1.device) #34
 
         sa1 = torch.cat([state1_concat, action], 1)
 
@@ -120,9 +143,11 @@ class TD3(object):
         if len(obs.shape) < 3:
             obs = obs[None, :, :]
         
+        #reshape for VAE input
         obs = obs.permute(2,0,1)
-        obs = obs.reshape((-1,3,48,64))
-        
+        obs = obs.reshape((1,3,48,64)).to(torch.float32)
+        # obs = obs.reshape((1,3,48,64)).to(torch.float64)
+
         action = self.actor(obs, last_act, relative_pos).cpu().data.numpy().flatten()
         action += np.random.normal(0, self.exploration_noise, size=action.shape)
 

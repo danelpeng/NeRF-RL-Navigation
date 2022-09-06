@@ -18,12 +18,23 @@ from tensorboardX import SummaryWriter
 import shutil
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-
+#import encoder.vae
+import encoder.vae_maze
 import envs.registration
 from rl_algo.td3 import Actor, Critic, TD3, ReplayBuffer
 from rl_algo.collector import LocalCollector
-from rl_algo.encoder import CNNEncoder
 from models.net import MLP
+
+#for office
+# vae_pretrain_model_path = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/logs/VAE/version_10/chechpoints/last.ckpt'
+# vae_model = encoder.vae.VAE(in_channels=3, latent_dim=128)
+
+#for maze1
+vae_pretrain_model_path = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/logs/maze1/VAE/version_1/chechpoints/epoch=94-step=8930.ckpt'
+vae_model = encoder.vae_maze.VAE(in_channels=3, latent_dim=32)
+
+# input_image = '/home/lkq/ros_project/acc/acc_ws/src/script/encoder/Data/office_128x96/episode_10_time_step_1.jpg'
+# img = default_loader(input_image)
 
 
 def initialize_config(config_path, save_path):
@@ -55,7 +66,7 @@ def initialize_logging(config):
     return save_path, writer
 
 
-def initialize_policy(config, env,):
+def initialize_policy(config, env, vae_pretrain_model_path, vae_model):
     state_dim = env.observation_space.shape #for office: (96, 128, 3)   for maze1: (48, 64, 3)
     action_dim = np.prod(env.action_space.shape)
     action_space_low = env.action_space.low
@@ -67,11 +78,12 @@ def initialize_policy(config, env,):
     device = "cuda:0"
     print(">>>>>>>> Running on device %s"%(device))
 
+    vae = load_pretrain_model(vae_pretrain_model_path, vae_model)
     # initialize actor
     input_dim = 32 + 2 + 2 #latent_dim + previous_act + relative_pos
     
     actor = Actor(
-        encoder=CNNEncoder(), 
+        encoder=vae, 
         head=MLP(input_dim=input_dim, num_layers=2, hidden_layer_size=512),
         action_dim=action_dim,
         ).to(device)
@@ -86,7 +98,7 @@ def initialize_policy(config, env,):
     # initialize critic
     input_dim += np.prod(action_dim)
     critic = Critic(
-        encoder=CNNEncoder(),
+        encoder=vae,
         head=MLP(input_dim=input_dim, num_layers=2, hidden_layer_size=512),
     ).to(device)
     critic_optim = torch.optim.Adam(
@@ -125,9 +137,21 @@ def load_pretrain_model(model_path, model):
     for child in model.children():
         for param in child.parameters():
             param.requires_grad = False
-            
 
     return model
+
+# def load_img(img):
+#     img = np.transpose(img, (2,0,1))
+#     img = torch.tensor(img).reshape((1,3,96,128)).to(torch.float32)
+#     return img
+
+# def test(img, vae_pretrain_model_path, vae_model):
+#     img = load_img(img)
+#     vae = load_pretrain_model(vae_pretrain_model_path, vae_model)
+#     [mu, log_var] = vae.encode(img)
+#     vae_feature = vae.reparameterize(mu, log_var)
+#     print(vae_feature) #[1, 128]
+# test(img, vae_pretrain_model_path, vae_model)
 
 def train(env, policy, replay_buffer, config):
     save_path, writer = initialize_logging(config)
@@ -199,7 +223,7 @@ if __name__ == "__main__":
     env = gym.make(id = 'motion_control_continuous_laser-v0',)
 
     print(">>>>>>>>>>>>>>>>> Initializing the policy")
-    policy, replay_buffer = initialize_policy(config, env)
+    policy, replay_buffer = initialize_policy(config, env, vae_pretrain_model_path, vae_model)
 
     print(">>>>>>>>>>>>>>>>>> Start training <<<<<<<<<<<<<<<<<<<<<<<")
     train(env, policy, replay_buffer, config)
