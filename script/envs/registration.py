@@ -1,7 +1,17 @@
 from gym.envs.registration import register
 
-#Motion control envs
+"""
+Jackal robot
+"""
+# register(
+#     id="motion_control_continuous_laser-v0",
+#     entry_point="envs.turtle_gazebo_env:TurtleGazebo"
+# )
+
+"""
+turtlebot robot
+"""
 register(
-    id="motion_control_continuous_laser-v0",
-    entry_point="envs.turtle_gazebo_env:TurtleGazebo"
+    id="NeRF-RL-Nav",
+    entry_point="envs.env:GazeboSimulation"
 )
