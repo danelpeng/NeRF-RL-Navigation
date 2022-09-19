@@ -63,8 +63,8 @@ class GazeboSimulation(gym.Env):
         self.observation_space = Box(
             low=0,
             high=1,   #for collect image: 255; for train: 1
-            shape=(48, 64, 3),
-            dtype=np.float64,
+            shape=(3, 48, 64),#(c:3, h:48, w:64),(h:48, w:64, c:3)
+            dtype=np.float64,#dtype=np.float64,
         )
         self.vel_cmd = [0.0, 0.0]
     
@@ -119,8 +119,12 @@ class GazeboSimulation(gym.Env):
             cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
         
         cv_image = cv2.resize(cv_image, (self.img_width, self.img_height))
-
         cv_image = np.array(cv_image)
+
+        #HWC -> CHW
+        cv_image = cv_image.transpose((2, 0, 1))
+        # #BGR -> RGB
+        # cv_image = cv_image[::-1, :, :]
 
         obs = cv_image/255.0
         return obs 
@@ -164,6 +168,7 @@ class GazeboSimulation(gym.Env):
         self.reward = 0
         image_data = None
         cv_image = None
+        
 
         while image_data is None:
             image_data = rospy.wait_for_message('/camera/rgb/image_raw', Image, timeout=5)
@@ -174,6 +179,10 @@ class GazeboSimulation(gym.Env):
         cv_image = cv2.resize(cv_image, (self.img_width, self.img_height))   
 
         cv_image = np.array(cv_image) 
+        #HWC -> CHW
+        cv_image = cv_image.transpose((2, 0, 1))
+
+
         obs = cv_image/255.0
         
         contact_data = None
@@ -221,11 +230,9 @@ class GazeboSimulation(gym.Env):
 
         info = dict(
             collided = collision,
-            #time = self.current_time - self.start_time,
             success = self.success,
             relative_position = self.p,
-            # camera_pos = np.array([camera_x, camera_y, camera_z]),
-            # camera_quat = np.array([camera_orientation_x, camera_orientation_y, camera_orientation_z, camera_orientation_w]),
+
         )
         return obs, self.reward, done, info
     
