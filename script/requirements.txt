@@ -13,3 +13,5 @@ torchsummary
 torchvision
 pytorch_lightning
 tensorboardX
+tianshou
+matplotlib
